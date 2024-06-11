@@ -13,18 +13,22 @@ class CommentinfoSpider(scrapy.Spider):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
     }
-    start_urls = []
-    # start_urls = ["https://api.bilibili.com/x/v2/reply?type=12&oid="+id for id in oid_list]
-    for id in oid_list:
-        #获取评论总数
-        count = requests.get(url="https://api.bilibili.com/x/v2/reply/count?type=1&oid=" + id, headers=headers).json()["data"][
-            "count"]
-        print("评论总数：",str(count))
-        #翻页查询获取所有评论
+
+    def start_requests(self):
+        for oid in self.oid_list:
+            count_url = f"https://api.bilibili.com/x/v2/reply/count?type=1&oid={oid}"
+            yield scrapy.Request(url=count_url, headers=self.headers, callback=self.parse_comment_count,
+                                 meta={'oid': oid})
+
+    def parse_comment_count(self, response):
+        oid = response.meta['oid']
+        count = json.loads(response.body)["data"]["count"]
+        self.logger.warning(f"评论总数：{count}")
+
         for i in range(1, int(count / 20 + 2)):
-            new_url = "https://api.bilibili.com/x/v2/reply?type=1&sort=1&oid={}&pn={}".format(id, i)
-            start_urls.append(new_url)
-        # start_urls.append("https://api.bilibili.com/x/v2/reply?type=1&sort=1&oid={}&pn=1".format(id))
+            self.logger.warning(f"爬取第{i}页")
+            new_url = f"https://api.bilibili.com/x/v2/reply?type=1&sort=1&oid={oid}&pn={i}"
+            yield scrapy.Request(url=new_url, headers=self.headers, callback=self.parse)
 
 
     def parse(self, response):

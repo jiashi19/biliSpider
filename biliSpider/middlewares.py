@@ -73,12 +73,12 @@ class BilispiderDownloaderMiddleware:
         return s
 
     def process_request(self, request, spider):
-        request.headers[
-            'User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+        # request.headers[
+        #     'User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
         if spider.name in ["articleInfo", "commentInfo", "video"]:
             # request.cookies='SESSDATA=2dd02df1%2C1733119747%2C004dd%2A62CjBrUgO_PKD0hjXSoULcnieaZy8awe7jfsU-uVjhSO9WPRfrKPCvhvCoiQRmJ0ziwd4SVlFCRi1VMC14QUtxZkhWN0dGR3BReU5SWWowY3l3ZHNxZWktTDZRTFZiNV8ydnVrbEVQbXZRYWIxUWNNa0kzVHhUNVdlUUF5cHBoTHpqdjY2UnlIUWd3IIEC'
             cookies = {
-                'SESSDATA': 'edeabf9c%2C1733382082%2Cba636%2A62CjAg7_YeVxRsO-8jEYCE1QrHt5bLzJ1l18Btzxmbgdj-9XXKkUb6_nWLUrvtszCfxNcSVkJaTEsxYkpEOENfY3NjOWhIWWdWYkxjTnhINlhSdFVMREV3YXF3SkNMRDI2NkhGZUFSZlotNDgwWk5YdUtFa09WTFRsaHJ2Y3hRVmdkcDRRSFBNRlZRIIEC',
+                'SESSDATA': '43584b8a%2C1733647539%2C9dbf7%2A62CjA7Tc35-CRnTE06LfRxW-oB5xDElZV2Fp-0VEd0RbaWJh38zy4Nx4u5lNAfUe8EtwASVnQzOW5fTGJXUDBtUnhSZ0NobVQ3Uk5lQnZYMGRvc1h4NDdKMDdCbURoa2ZNMFNGNjBuZUxfLW5VUWltdFF5WFFQckdScTVvUjZyVzJxV2pKWVdfT3R3IIEC',
             }
             request.cookies.update(cookies)
         if spider.name in ["video"]:

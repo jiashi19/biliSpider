@@ -9,9 +9,9 @@ import logging
 from itemadapter import ItemAdapter
 
 
-class BilispiderPipeline:
-    def process_item(self, item, spider):
-        return item
+# class BilispiderPipeline:
+#     def process_item(self, item, spider):
+#         return item
 
 
 class JsonWriterPipeline:
@@ -30,6 +30,6 @@ class JsonWriterPipeline:
         # Check if the spider's name matches the one you want to apply the pipeline to
         if spider.name == "commentInfo":
             items=self.items
-            print("本次爬取获取到视频下评论共{}条".format(len(items)))
+            print("本次爬取获取到评论共{}条".format(len(items)))
             with open('result/comments.json', 'w', encoding="utf-8") as f:
                 json.dump(items, f, ensure_ascii=False)
