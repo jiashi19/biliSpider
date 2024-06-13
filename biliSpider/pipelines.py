@@ -4,6 +4,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import logging
+from datetime import datetime
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -31,5 +32,6 @@ class JsonWriterPipeline:
         if spider.name == "commentInfo":
             items=self.items
             print("本次爬取获取到评论共{}条".format(len(items)))
-            with open('result/comments.json', 'w', encoding="utf-8") as f:
-                json.dump(items, f, ensure_ascii=False)
+            if len(items)!=0:
+                with open(f'result/comments_{int(datetime.now().timestamp())}.json', 'w', encoding="utf-8") as f:
+                    json.dump(items, f, ensure_ascii=False)

@@ -43,4 +43,5 @@ class CommentItem(scrapy.Item):
     parent_user_id = scrapy.Field()
     description = scrapy.Field()
 
+    reqNo=scrapy.Field()
 
