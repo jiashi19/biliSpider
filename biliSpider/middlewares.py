@@ -131,15 +131,15 @@ class BilispiderDownloaderMiddleware:
             code=json.loads(response.body)["code"]
             if code=="-412":
                 logging.WARNING("客户端IP被限制")
-                proxy_used = request.meta.get('proxy').split("http://")[1]
-                self.delete_proxy(proxy_used)
+                # proxy_used = request.meta.get('proxy').split("http://")[1]
+                # self.delete_proxy(proxy_used)
                 time.sleep(5)
                 return request.copy()
         return response
 
     def process_exception(self, request, exception, spider):
-        proxy_used = request.meta.get('proxy').split("http://")[1]
-        self.delete_proxy(proxy_used)
+        # proxy_used = request.meta.get('proxy').split("http://")[1]
+        # self.delete_proxy(proxy_used)
         # Called when a download handler or a process_request()
         # (from other downloader middleware) raises an exception.
 
@@ -208,8 +208,8 @@ class BilispiderDownloaderMiddleware:
 
     def get_proxy(self):
         data = requests.get('http://127.0.0.1:5010/get/').json()
-        if data['last_status']:  # 确保代理最近可用
-            protocol="https" if data["https"] else "http"
+        if data['last_status'] and data["https"]:  # 确保代理最近可用且为https
+            protocol="https"
             proxy = data['proxy']
             return f'{protocol}://{proxy}'
         return None

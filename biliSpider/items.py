@@ -44,4 +44,5 @@ class CommentItem(scrapy.Item):
     description = scrapy.Field()
 
     reqNo=scrapy.Field()
+    oid=scrapy.Field()
 

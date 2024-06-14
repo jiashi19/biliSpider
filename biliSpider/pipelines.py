@@ -14,24 +14,37 @@ from itemadapter import ItemAdapter
 #     def process_item(self, item, spider):
 #         return item
 
-
+class DataProcessingPipeline:
+    def process_item(self, item, spider):
+        if spider.name == "commentInfo":
+            item["content"]=item["content"].replace("\n"," ")
+            item["description"] = item["description"].replace("\n", " ")
+            # 继续处理其他字段
+            return item
 class JsonWriterPipeline:
     def open_spider(self, spider):
         # Check if the spider's name matches the one you want to apply the pipeline to
         if spider.name == "commentInfo":
-            self.items = []
+            self.items = {}
 
     def process_item(self, item, spider):
         # Check if the spider's name matches the one you want to apply the pipeline to
         if spider.name == "commentInfo":
-            self.items.append(dict(item))
+            oid = item['oid']
+            if oid:
+                if oid not in self.items:
+                    self.items[oid] = []
+                self.items[oid].append(dict(item))
         return item
 
     def close_spider(self, spider):
         # Check if the spider's name matches the one you want to apply the pipeline to
         if spider.name == "commentInfo":
-            items=self.items
-            print("本次爬取获取到评论共{}条".format(len(items)))
-            if len(items)!=0:
-                with open(f'result/comments_{int(datetime.now().timestamp())}.json', 'w', encoding="utf-8") as f:
-                    json.dump(items, f, ensure_ascii=False)
+            for oid, items in self.items.items():
+                print(f"爬取获取到oid为 {oid} 的评论共 {len(items)} 条")
+                if items:
+                    filename = f'result/comments_{oid}_{int(datetime.now().timestamp())}.json'
+                    with open(filename, 'w', encoding="utf-8") as f:
+                        json.dump(items, f, ensure_ascii=False)
+                else:
+                    logging.warning(f"爬取出现错误，未获取到oid为 {oid} 的结果")
