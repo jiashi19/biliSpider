@@ -8,25 +8,27 @@ from biliSpider.items import CommentItem
 from utils.av2bv import *
 class CommentInfoSpider(scrapy.Spider):
     name = "commentInfo"
-    oid_list = ['BV1FJ4m1376p']
+    # oid_list = ['BV1FJ4m1376p']
+    oid_list=[]
     # fake = Faker()
     # headers = {
     #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
     # }
-    fake_ua_list=[
-        "Opera/8.15.(Windows NT 11.0; fi-FI) Presto/2.9.179 Version/11.00",
-        "Mozilla/5.0 (Windows; U; Windows 98) AppleWebKit/535.47.2 (KHTML, like Gecko) Version/4.0.1 Safari/535.47.2",
-        "Mozilla/5.0 (Macintosh; PPC Mac OS X 10_9_3 rv:4.0; ce-RU) AppleWebKit/535.15.5 (KHTML, like Gecko) Version/4.0.1 Safari/535.15.5",
-        "Mozilla/5.0 (compatible; MSIE 5.0; Windows 98; Win 9x 4.90; Trident/3.0)",
-        "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.2; Trident/5.0)"
-    ]
+
+
+    # def __init__(self, param=None, *args, **kwargs):
+    #     super().__init__(**kwargs)
+    #     self.oid_list.append(self.id)
     # 首先获取总个数
+
+
     def start_requests(self):
+        self.oid_list.append(self.id) # id通过命令行参数-a进行传递
         for oid in self.oid_list:
             if oid.startswith("BV1"):
                 oid=bv2av(oid)
             count_url = f"https://api.bilibili.com/x/v2/reply/count?type=1&oid={oid}"
-            yield scrapy.Request(url=count_url, headers={"User-Agent":random.choice(self.fake_ua_list)}, callback=self.parse_comment_count)
+            yield scrapy.Request(url=count_url, headers={"User-Agent":random.choice(self.settings.get("FAKE_UA_LIST"))}, callback=self.parse_comment_count)
 
     # 然后生成访问页数的request
     def parse_comment_count(self, response):
@@ -47,7 +49,7 @@ class CommentInfoSpider(scrapy.Spider):
         # for reply in result.get('replies', []):
         for reply in result["data"]["replies"]:
             item = CommentItem()
-            comment_url = "https://api.bilibili.com/x/v2/reply/reply?type=1&oid={}&root={}".format(
+            comment_api_url = "https://api.bilibili.com/x/v2/reply/reply?type=1&oid={}&root={}".format(
                 oid,
                 reply["rpid"])
             # item["parent_user_id"] = reply["member"]["uname"]
@@ -63,18 +65,18 @@ class CommentInfoSpider(scrapy.Spider):
 
             item["is_first_level"] = 1 if reply["parent"] == 0 else 0  #
             item["url"] = video_url
-            item["comment_url"] = comment_url
+            item["comment_url"] = video_url+"#reply"+str(reply["rpid"])
             item["user_photo"] = reply["member"]["avatar"]
             item["parent_content"] = "0"
             item["parent_create_date"] = reply["ctime"]
             item["parent_user_id"] = reply["parent"]
             item["description"] = reply["member"]["sign"]
-            item["reqNo"]=reply["rpid"]
+            item["comment_id"]=reply["rpid"]
             item["oid"]=oid
             yield item
             if int(reply["rcount"]) > 0:
                 for i in range(1, int(reply["rcount"] / 20 + 2)):
-                    yield scrapy.Request(url=comment_url+f"&pn={i}", headers={"User-Agent":random.choice(self.fake_ua_list)},
+                    yield scrapy.Request(url=comment_api_url+f"&pn={i}", headers={"User-Agent":random.choice(self.fake_ua_list)},
                                      callback=self.parse_reply,meta={'oid': oid})
 
     # 解析二级评论的结果
@@ -99,7 +101,7 @@ class CommentInfoSpider(scrapy.Spider):
 
             sub_item["is_first_level"] = 1 if sub_reply["parent"] == 0 else 0  #
             sub_item["url"] = video_url
-            sub_item["comment_url"] = response.url
+            sub_item["comment_url"] = video_url+"#reply"+str(sub_reply["rpid"])
             sub_item["user_photo"] = sub_reply["member"]["avatar"]
             # sub_item["parent_content"] = response.meta["p_content"]
             sub_item["parent_content"] = parent_content
@@ -108,7 +110,7 @@ class CommentInfoSpider(scrapy.Spider):
             sub_item["parent_create_date"] = parent_create_date
             sub_item["parent_user_id"] = sub_reply["parent"]
             sub_item["description"] = sub_reply["member"]["sign"]
-            sub_item["reqNo"]=sub_reply["rpid"]
+            sub_item["comment_id"]=sub_reply["rpid"]
             sub_item["oid"]=response.meta["oid"]
             yield sub_item
 

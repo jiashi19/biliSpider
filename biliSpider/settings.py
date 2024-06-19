@@ -51,6 +51,7 @@ DOWNLOAD_DELAY = 0.2
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+
    "biliSpider.middlewares.BilispiderDownloaderMiddleware": 543,
 }
 
@@ -64,7 +65,8 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "biliSpider.pipelines.DataProcessingPipeline": 300,
-   "biliSpider.pipelines.JsonWriterPipeline":302
+   "biliSpider.pipelines.CommentJsonWriterPipeline":302,
+   "biliSpider.pipelines.UserInfoJsonWriterPipeline":303
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -92,8 +94,17 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
-
+#日志等级,warning级别只会输出警告信息
 LOG_LEVEL = 'WARNING'
 
 
-
+#redis中存放视频id的set
+VIDEO_ID_SET="video_id_set"
+#自定义的user agent list
+FAKE_UA_LIST= [
+   "Opera/8.15.(Windows NT 11.0; fi-FI) Presto/2.9.179 Version/11.00",
+   "Mozilla/5.0 (Windows; U; Windows 98) AppleWebKit/535.47.2 (KHTML, like Gecko) Version/4.0.1 Safari/535.47.2",
+   "Mozilla/5.0 (Macintosh; PPC Mac OS X 10_9_3 rv:4.0; ce-RU) AppleWebKit/535.15.5 (KHTML, like Gecko) Version/4.0.1 Safari/535.15.5",
+   "Mozilla/5.0 (compatible; MSIE 5.0; Windows 98; Win 9x 4.90; Trident/3.0)",
+   "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.2; Trident/5.0)"
+]
