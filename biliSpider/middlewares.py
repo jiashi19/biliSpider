@@ -5,13 +5,10 @@
 import json
 import logging
 import random
-from functools import reduce
-from hashlib import md5
-import urllib.parse
 import time
 import requests
-from scrapy import signals
-
+from scrapy import signals, crawler
+from biliSpider.settings import COOKIE_SESSDATA_LIST
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
@@ -66,7 +63,6 @@ class BilispiderSpiderMiddleware:
 
 class BilispiderDownloaderMiddleware:
 
-
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -74,45 +70,14 @@ class BilispiderDownloaderMiddleware:
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
+    #统一为请求添加cookies
     def process_request(self, request, spider):
-        cookie_list=[
-           "56295b54%2C1734247815%2C4ac44%2A62CjBU7BY-AJz81NP6QL99xVqmDCPlUF2TtPOoTdI8pOu2SzVy8nEXfLvr1L_5SdbnWJkSVnFHMVYwcm1wQkxiX3c5M0VWQTM2Y0lPNlo0MmFyay1MTXI2amhBOVNuaWNWSGNyZDJla2xmQWtKYW1BcmR4aGFhV1puSHl0N2tfb00zeFFkTkVualVnIIEC"
-        ]
-        # request.headers[
-        #     'User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
-        # if spider.name in ["articleInfo", "commentInfo", "vids_by_up"]:
-            # request.cookies='SESSDATA=2dd02df1%2C1733119747%2C004dd%2A62CjBrUgO_PKD0hjXSoULcnieaZy8awe7jfsU-uVjhSO9WPRfrKPCvhvCoiQRmJ0ziwd4SVlFCRi1VMC14QUtxZkhWN0dGR3BReU5SWWowY3l3ZHNxZWktTDZRTFZiNV8ydnVrbEVQbXZRYWIxUWNNa0kzVHhUNVdlUUF5cHBoTHpqdjY2UnlIUWd3IIEC'
+        #从settings中导入
+        cookie_list=COOKIE_SESSDATA_LIST
         cookies = {
             'SESSDATA': random.choice(cookie_list),
         }
         request.cookies.update(cookies)
-            #添加代理IP
-            # proxy = self.get_proxy()
-            # while not proxy:
-            #     # 如果没有成功获取代理，则等待一段时间再尝试
-            #     time.sleep(1)
-            #     proxy = self.get_proxy()
-            #
-            # request.meta['proxy'] = proxy
-
-        # if spider.name in ["videoaa"]:
-        #     print(1)
-        #     parsed_url = urllib.parse.urlparse(request.url)
-        #     # 获取 URL 中的 GET 参数
-        #     q_params = urllib.parse.parse_qs(parsed_url.query)
-        #     params = {key: value[0] for key, value in q_params.items()}
-        #     # print(params)
-        #     if params:
-        #         # img_key, sub_key = self.read_wbi_keys("biliSpider/wbi_key.json")
-        #         img_key,sub_key=self.getWbiKeys()
-        #         # 调用 encWbi 函数计算新的参数
-        #         new_params = self.encWbi(params, img_key, sub_key)
-        #         # 创建新的 URL 并设置给请求
-        #         new_query = urllib.parse.urlencode(new_params)
-        #         new_url = request.url.split('?')[0] + '?' + new_query
-        #         request = request.replace(url=new_url)
-        #         print(new_url)
-
         return None
 
     def process_response(self, request, response, spider):
@@ -121,8 +86,6 @@ class BilispiderDownloaderMiddleware:
         code=int(json.loads(response.body)["code"])
         if code<0:
             logging.warning(json.loads(response.body))
-            # proxy_used = request.meta.get('proxy').split("http://")[1]
-            # self.delete_proxy(proxy_used)
             return request.copy()
         return response
 

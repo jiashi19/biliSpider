@@ -5,7 +5,9 @@ import scrapy
 
 from biliSpider.items import UserInfoItem
 
-
+'''
+使用示例：scrapy crawl userInfo -a mid=446430908 
+'''
 class UserinfoSpider(scrapy.Spider):
     name = "userInfo"
 

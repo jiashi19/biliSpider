@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import re
 from datetime import datetime
@@ -6,20 +7,13 @@ import requests
 import scrapy
 from biliSpider.items import CommentItem
 from utils.av2bv import *
+
+'''
+使用示例：scrapy crawl commentInfo -a id=BV16z421B74y
+'''
 class CommentInfoSpider(scrapy.Spider):
     name = "commentInfo"
-    # oid_list = ['BV1FJ4m1376p']
     oid_list=[]
-    # fake = Faker()
-    # headers = {
-    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
-    # }
-
-
-    # def __init__(self, param=None, *args, **kwargs):
-    #     super().__init__(**kwargs)
-    #     self.oid_list.append(self.id)
-    # 首先获取总个数
 
 
     def start_requests(self):
@@ -38,7 +32,7 @@ class CommentInfoSpider(scrapy.Spider):
 
         for i in range(1, int(count / 20 + 2)):
             new_url = f"https://api.bilibili.com/x/v2/reply?type=1&sort=1&oid={oid}&pn={i}"
-            yield scrapy.Request(url=new_url, headers={"User-Agent":random.choice(self.fake_ua_list)}, callback=self.parse, meta={'oid': oid})
+            yield scrapy.Request(url=new_url, headers={"User-Agent":random.choice(self.settings.get("FAKE_UA_LIST"))}, callback=self.parse, meta={'oid': oid})
 
     # 解析结果，并生成访问二级评论的request
     def parse(self, response):
@@ -76,12 +70,15 @@ class CommentInfoSpider(scrapy.Spider):
             yield item
             if int(reply["rcount"]) > 0:
                 for i in range(1, int(reply["rcount"] / 20 + 2)):
-                    yield scrapy.Request(url=comment_api_url+f"&pn={i}", headers={"User-Agent":random.choice(self.fake_ua_list)},
+                    yield scrapy.Request(url=comment_api_url+f"&pn={i}", headers={"User-Agent":random.choice(self.settings.get("FAKE_UA_LIST"))},
                                      callback=self.parse_reply,meta={'oid': oid})
 
     # 解析二级评论的结果
     def parse_reply(self, response):
         result = json.loads(response.body)
+        if int(result["code"])==12022:
+            self.logger.warning("消息似乎被删除了")
+            pass
         current_time = int(datetime.now().timestamp())
         parent_content = result["data"]["root"]["content"]["message"]
         parent_create_date = result["data"]["root"]["ctime"]

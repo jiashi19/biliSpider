@@ -29,5 +29,5 @@ def bv2av(bvid: str) -> int:
     return (tmp & MASK_CODE) ^ XOR_CODE
 
 if __name__ == '__main__':
-    print(av2bv(309952238))
+    print(av2bv(520120071))
     print(bv2av("BV1aG4y1q7AZ"))

@@ -1,7 +1,9 @@
 import scrapy
 from utils.getSignedParam import BiliWbiSigner
 import redis
-
+'''
+使用示例：scrapy crawl vids_by_up -a mid=446430908
+'''
 class VidsByUp(scrapy.Spider):
     name = "vids_by_up"
 

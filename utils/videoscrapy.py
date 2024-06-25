@@ -29,7 +29,7 @@ async def download_url(url: str, out: str, info: str):
                     break
 
                 process += len(chunk)
-                print(f'下载 {info} {process} / {length}')
+                # print(f'下载 {info} {process} / {length}')
                 f.write(chunk)
 
 
@@ -83,6 +83,6 @@ def download_video_by_bvid(bvid):
 
 
 if __name__ == '__main__':
-    bvid="BV1By411B7nA"
+    bvid="BV1aM411k734"
     # 主入口
     asyncio.get_event_loop().run_until_complete(main(bvid))
