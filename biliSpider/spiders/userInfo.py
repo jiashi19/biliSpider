@@ -6,7 +6,8 @@ import scrapy
 from biliSpider.items import UserInfoItem
 
 '''
-使用示例：scrapy crawl userInfo -a mid=446430908 
+使用示例：scrapy crawl userInfo -a mid=446430908 、
+对应pipeline: UserInfoJsonWriterPipeline
 '''
 class UserinfoSpider(scrapy.Spider):
     name = "userInfo"

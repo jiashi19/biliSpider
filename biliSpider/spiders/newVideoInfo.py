@@ -7,6 +7,7 @@ from biliSpider.items import VideoItem
 
 '''
 使用示例：scrapy crawl newVideoInfo 
+对应pipeline：NewVideoJsonWriterPipeline
 '''
 class NewVideoSpider(scrapy.Spider):
     name = 'newVideoInfo'

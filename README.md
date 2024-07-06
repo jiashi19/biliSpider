@@ -28,11 +28,22 @@ biliSpider：基于b站API接口实现的b站内容爬虫，整体基于scrapy�
 
 ## 安装和配置
 
-**安装python的scrapy库**
+**安装scrapy库**
 
 ```bash
 pip install scrapy 
 ```
+**安装bilibili-api-python**
+
+```bash
+pip install bilibili-api-python
+```
+
+注：若直接install bilibili_api所得到的库不符合该项目使用。
+
+**下载并配置好ffmpeg**
+
+如果无下载视频需求请忽略
 
 **安装并运行redis**
 
@@ -59,7 +70,9 @@ DOWNLOADER_MIDDLEWARES = {
 ```python
 #scrapy 管道处理方法，对应pipelines.py中的管道类
 ITEM_PIPELINES = {
-    "biliSpider.pipelines.DataProcessingPipeline": 300,
+    #数据处理pipeline
+    "biliSpider.pipelines.DataProcessingPipeline": 300, 
+    #数据存储pipeline
     "biliSpider.pipelines.CommentJsonWriterPipeline": 302,
     "biliSpider.pipelines.UserInfoJsonWriterPipeline": 303,
     "biliSpider.pipelines.NewVideoJsonWriterPipeline": 304,
@@ -87,10 +100,15 @@ COOKIE_SESSDATA_LIST = [
     "sessdata1",
     "sessdata2"
 ]
-
 ```
 
+如涉及到爬取视频，还需要配置utils/videoscrapy.py中的对应cookie值。（**to be improved**）
 
+```python
+SESSDATA = "sessdata"
+BILI_JCT = "bili_jct"
+BUVID3 = "buvid3"
+```
 
 ## 如何运行项目
 

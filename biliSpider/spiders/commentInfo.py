@@ -1,15 +1,14 @@
 import json
-import logging
 import random
 import re
 from datetime import datetime
-import requests
 import scrapy
 from biliSpider.items import CommentItem
 from utils.av2bv import *
 
 '''
 使用示例：scrapy crawl commentInfo -a id=BV16z421B74y
+对应pipeline：CommentJsonWriterPipeline
 '''
 class CommentInfoSpider(scrapy.Spider):
     name = "commentInfo"

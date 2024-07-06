@@ -20,7 +20,6 @@ class ArticleinfoSpider(scrapy.Spider):
     # start_urls = ["https://api.bilibili.com/x/article/viewinfo?id=" + cvid for cvid in cvid_list]
 
     def start_requests(self):
-        img_key, sub_key = BiliWbiSigner.getWbiKeys()
         id = self.cvid  # 通过命令行输入
         url = f"https://api.bilibili.com/x/article/viewinfo?id={id}"
         yield scrapy.Request(url=url, headers=self.headers, callback=self.parse)

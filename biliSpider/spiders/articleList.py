@@ -8,6 +8,7 @@ from utils.getSignedParam import BiliWbiSigner
 
 '''
 使用示例：scrapy crawl articleList -a keyword=KEYWORD
+对应pipeline: ArticleListJsonWriterPipeline
 '''
 class articleListSpider(scrapy.Spider):
     name = "articleList"

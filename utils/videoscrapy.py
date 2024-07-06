@@ -3,10 +3,9 @@ from bilibili_api import video, Credential, HEADERS
 import httpx
 import os
 import tqdm
-
-SESSDATA = "538e8476%2C1733729728%2C3d1f3%2A61CjBvp57u2YEk1-CBi8QMk-KPvYEKu4b7cKMJRltKhrUIlfkJARcBJmh6vhoeIiKmJIYSVjZ6Tk4yMXJRV1ZmZnRuRlpKZDF5UFJVbk5qaHFISm8zZWxMcHppVXN3bXQ2clV6VmpHdHZ0WDluX2FQYXlNb2ZObVU3Uy1fLWZVY2dOZVU5WUZNZW5BIIEC"
-BILI_JCT = "e7fd44adce99b2831ad1312002d44697"
-BUVID3 = "71C4A09F-8473-4DC4-8918-7AE05DEC3A95167615infoc"
+SESSDATA = "sessdata"
+BILI_JCT = "bili_jct"
+BUVID3 = "buvid3"
 
 # FFMPEG 路径，查看：http://ffmpeg.org/
 FFMPEG_PATH = "ffmpeg"
@@ -83,6 +82,7 @@ def download_video_by_bvid(bvid):
 
 
 if __name__ == '__main__':
-    bvid="BV1aM411k734"
+    bvid="BV17T421k775"
+
     # 主入口
     asyncio.get_event_loop().run_until_complete(main(bvid))
